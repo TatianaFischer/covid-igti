@@ -19,6 +19,7 @@
   })();
 })();
 
+// carregamento dos países
 function loadCountries(data) {
   let combo = document.getElementById('combo');
 
@@ -36,4 +37,19 @@ function loadCountries(data) {
       data[index].Country,
     );
   }
+}
+
+// carregamento dos dados globais
+function loadSummary(data) {
+  let confirmed = document.getElementById('confirmed');
+  let death = document.getElementById('death');
+  let recovered = document.getElementById('recovered');
+  let active = document.getElementById('active');
+
+  confirmed.innerText = data.Global.TotalConfirmed.toLocaleString('PT');
+  death.innerText = data.Global.TotalDeaths.toLocaleString('PT');
+  recovered.innerText = data.Global.TotalRecovered.toLocaleString('PT');
+  active.innerText = formatData(new Date(data.Global.Date));
+
+  document.getElementById('actives').innerText = 'Atualização';
 }
