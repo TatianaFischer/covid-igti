@@ -53,3 +53,107 @@ function loadSummary(data) {
 
   document.getElementById('actives').innerText = 'Atualização';
 }
+
+// manipulador de evento:
+
+function handlerChange() {
+  let country = document.getElementById('combo').value;
+  if (country != 'Global') {
+    let startDate = new Date(document.getElementById('today').value);
+
+    //cálculo das diferenças de dados de 3 dias antes:
+    let endDate = new Date(
+      startDate.getFullYear(),
+      startDate.getMonth(),
+      startDate.getDate() + 1,
+      -3,
+      0,
+      1,
+      0,
+    );
+
+    start = new Date(
+      startDate.getFullYear(),
+      startDate.getMonth(),
+      start.getDate() - 1,
+      -3,
+      0,
+      0,
+      0,
+    );
+
+    fetch(
+      `https://api.covid19api.com/country/${country}?from=${startDate.toISOString()}&`,
+    )
+      .then((response) => response.json())
+      .then((json) => loadDate(json));
+  }
+}
+
+function loadDate(data) {
+  //pegar as datas de antes de ontem (data[0]) e de ontem (data[1]):
+  let yConfirmedDelta = data[1].Confirmed - data[0].Confirmed;
+  let yDeathDelta = data[1].Deaths - data[0].Deaths;
+  let yRecoveredDelta = data[1].Recovered - data[0].Recovered;
+  let yActiveDelta = data[1].Active - data[0].Active;
+
+  let tConfirmedDelta = data[2].Confirmed - data[1].Confirmed;
+  let tDeathDelta = data[2].Deaths - data[1].Deaths;
+  let tRecoveredDelta = data[2].Recovered - data[1].Recovered;
+  let tActiveDelta = data[2].Active - data[1].Active;
+
+  document.getElementById('confirmed').innerText =
+    data[2].Confirmed.toLocaleString('PT');
+  document.getElementById('death').innerText('death').innerText =
+    data[2].Deaths.toLocaleString('PT');
+  document.getElementById('recovered').innerText =
+    data[2].Recovered.toLocaleString.toLocaleString('PT');
+  document.getElementById('active').innerText =
+    data[2].Active.toLocaleString.toLocaleString('PT');
+  document.getElementById('actives').innerText = 'Total Ativos';
+
+  insertDailyData(
+    'tconfirmed',
+    tConfirmedDelta,
+    yConfirmedDelta < tConfirmedDelta,
+  );
+
+  insertDailyData('tdeath', tDeathDelta, yDeathDelta < tDeathDelta);
+
+  insertDailyData(
+    'trecovered',
+    tRecoveredDelta,
+    yRecoveredDelta < tRecoveredDelta,
+  );
+  insertDailyData(
+    'tactive',
+    tActiveDelta,
+    yActiveDelta,
+    yActiveDelta - tActiveDelta,
+  );
+}
+
+function insertDailyData(element, value, increase) {
+  if (increase) {
+    document.getElementById(element).innerHTML = `
+      <img src= '/assets/img/up.png'> Diário ${value.toLocaleString('PT')}
+    `;
+  } else {
+    document.getElementById(element).innerHTML = `
+      <img src= '/assets/img/down.png'> Diário ${value.toLocaleString('PT')}
+    `;
+  }
+}
+
+function formatData(date) {
+  let d = date;
+  d = [
+    '0' + d.getDate(),
+    '0' + (d.getMonth() + 1),
+    '' + d.getFullYear(),
+    '0' + d.getHours(),
+    '0' + d.getMinutes(),
+  ].map((c) => c.slice(-2));
+
+  return d.slice(0, 3).join('.') + ' ' + d.slice(3).join(':');
+}
