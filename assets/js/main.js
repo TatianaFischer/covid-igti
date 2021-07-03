@@ -18,3 +18,22 @@
     }
   })();
 })();
+
+function loadCountries(data) {
+  let combo = document.getElementById('combo');
+
+  //Ordenação oderdem alfabéticas dos paises:
+  data.sort((a, b) => {
+    let x = a.Country.toUpperCase();
+    let y = b.Country.toUpperCase();
+
+    return x === y ? 0 : x > y ? 1 : -1;
+  });
+
+  for (index in data) {
+    combo.options[combo.options.length] = new Option(
+      data[index].Country,
+      data[index].Country,
+    );
+  }
+}
