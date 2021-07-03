@@ -10,10 +10,10 @@
       fetch('https://api.covid19api.com/summary'),
     ]);
 
-    if (reponse[0].status == 'fulfielled') {
+    if (response[0].status == 'fulfilled') {
       loadCountries(await response[0].value.json());
     }
-    if (response[1].status == 'fulfielled') {
+    if (response[1].status == 'fulfilled') {
       loadSummary(await response[1].value.json());
     }
   })();
