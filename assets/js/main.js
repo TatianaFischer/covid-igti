@@ -9,7 +9,7 @@
       fetch('https://api.covid19api.com/countries'),
       fetch('https://api.covid19api.com/summary'),
     ]);
-
+    console.log({ response });
     if (response[0].status == 'fulfilled') {
       loadCountries(await response[0].value.json());
     }
@@ -49,7 +49,7 @@ function loadSummary(data) {
   confirmed.innerText = data.Global.TotalConfirmed.toLocaleString('PT');
   death.innerText = data.Global.TotalDeaths.toLocaleString('PT');
   recovered.innerText = data.Global.TotalRecovered.toLocaleString('PT');
-  active.innerText = formatData(new Date(data.Global.Date));
+  active.innerText = formatDate(new Date(data.Global.Date));
 
   document.getElementById('actives').innerText = 'Atualização';
 }
@@ -72,10 +72,10 @@ function handlerChange() {
       0,
     );
 
-    start = new Date(
+    startDate = new Date(
       startDate.getFullYear(),
       startDate.getMonth(),
-      start.getDate() - 1,
+      startDate.getDate() - 1,
       -3,
       0,
       0,
@@ -83,7 +83,7 @@ function handlerChange() {
     );
 
     fetch(
-      `https://api.covid19api.com/country/${country}?from=${startDate.toISOString()}&`,
+      `https://api.covid19api.com/country/${country}?from=${startDate}&to=${endDate}`,
     )
       .then((response) => response.json())
       .then((json) => loadDate(json));
@@ -91,25 +91,37 @@ function handlerChange() {
 }
 
 function loadDate(data) {
+  console.log(data, 'dados');
+  console.log(data[1], 'data[1]');
+
   //pegar as datas de antes de ontem (data[0]) e de ontem (data[1]):
   let yConfirmedDelta = data[1].Confirmed - data[0].Confirmed;
+  console.log(yConfirmedDelta, 'yConfirmedDelta');
+
   let yDeathDelta = data[1].Deaths - data[0].Deaths;
+  console.log(yDeathDelta, 'yDeathDelta');
+
   let yRecoveredDelta = data[1].Recovered - data[0].Recovered;
+  console.log(yRecoveredDelta, 'yRecoveredDelta');
+
   let yActiveDelta = data[1].Active - data[0].Active;
+  console.log(yActiveDelta, 'yActiveDelta');
 
   let tConfirmedDelta = data[2].Confirmed - data[1].Confirmed;
+  console.log(tConfirmedDelta, 'tConfirmedDelta');
+
   let tDeathDelta = data[2].Deaths - data[1].Deaths;
   let tRecoveredDelta = data[2].Recovered - data[1].Recovered;
   let tActiveDelta = data[2].Active - data[1].Active;
 
   document.getElementById('confirmed').innerText =
     data[2].Confirmed.toLocaleString('PT');
-  document.getElementById('death').innerText('death').innerText =
+  document.getElementById('death').innerText =
     data[2].Deaths.toLocaleString('PT');
   document.getElementById('recovered').innerText =
-    data[2].Recovered.toLocaleString.toLocaleString('PT');
+    data[2].Recovered.toLocaleString('PT');
   document.getElementById('active').innerText =
-    data[2].Active.toLocaleString.toLocaleString('PT');
+    data[2].Active.toLocaleString('PT');
   document.getElementById('actives').innerText = 'Total Ativos';
 
   insertDailyData(
@@ -145,8 +157,9 @@ function insertDailyData(element, value, increase) {
   }
 }
 
-function formatData(date) {
-  let d = date;
+function formatDate(data) {
+  console.log(data, 'data2');
+  let d = data;
   d = [
     '0' + d.getDate(),
     '0' + (d.getMonth() + 1),
